@@ -31,7 +31,9 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/attendance', require('./routes/attendance'));
 
-
+app.get('/', (req, res) => {
+  res.send('API is running 🚀');
+});
 
 // ✅ Start HTTP + WebSocket server
 server.listen(PORT, '0.0.0.0', () => {

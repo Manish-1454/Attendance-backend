@@ -18,14 +18,15 @@ connectDB();
 // ✅ Create HTTP server from Express app
 const server = http.createServer(app);
 
-
-
-// ✅ Middleware
 app.use(cors({
-  origin: '*', // allow all (for now)
-  methods: ['GET','POST','PUT','DELETE'],
-  credentials: true
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// ✅ IMPORTANT: handle preflight
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

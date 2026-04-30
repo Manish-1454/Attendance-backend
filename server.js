@@ -34,6 +34,6 @@ app.use('/api/attendance', require('./routes/attendance'));
 
 
 // ✅ Start HTTP + WebSocket server
-server.listen(PORT, () => {
-  console.log(`🚀 Server running at http://192.168.253.8:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });

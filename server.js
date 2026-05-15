@@ -25,7 +25,7 @@ app.use(express.json());
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("API is running 🚀");
+  res.status(200).send("API is running 🚀");
 });
 
 // Routes

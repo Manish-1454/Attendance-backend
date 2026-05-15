@@ -59,20 +59,15 @@ router.post('/add', upload.single('image'), async (req, res) => {
 router.post('/update/:id', upload.single('image'), async (req, res) => {
   try {
     const { name, phonenumber, salaryPerDay } = req.body;
+ 
 
-    // Create update object with normal fields
-    const updateData = {
-      name,
-      phonenumber,
-      salaryPerDay,
-    };
+     let imageUrl = "";
 
-    // Only upload and update image if a new image was selected
     if (req.file) {
       const streamUpload = (buffer) => {
         return new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
-            { folder: 'workers_profile' },
+            { folder: "workers_profile" },
             (error, result) => {
               if (result) resolve(result);
               else reject(error);
@@ -83,27 +78,18 @@ router.post('/update/:id', upload.single('image'), async (req, res) => {
       };
 
       const result = await streamUpload(req.file.buffer);
-
-      // Replace old image only when a new image exists
-      updateData.image = result.secure_url;
+      imageUrl = result.secure_url;
     }
-
-    // Update user
-    const updated = await User.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true }
-    );
-
-    res.json({
-      message: 'Updated Successfully',
-      updated,
-    });
+       const updateData = {
+      name,
+      phonenumber,
+      salaryPerDay,
+      image:imageUrl,
+    };
+    const updated = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    res.json({ message: 'Updated', updated });
   } catch (err) {
-    console.error('Update Error:', err);
-    res.status(500).json({
-      error: err.message,
-    });
+    res.status(500).json({ error: err.message });
   }
 });
 

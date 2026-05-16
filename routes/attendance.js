@@ -383,7 +383,9 @@ router.get("/week-summary/:userId", async (req, res) => {
     records.forEach((r) => {
       if (r.status === "Present") summary.presentDays += 1;
       if (r.status === "Absent") summary.absentDays += 1;
-      if (r.status.toLowerCase() === "half day") summary.halfDays += 1;
+     if (r.status && r.status.toLowerCase() === "half day") {
+  summary.halfDays += 1;
+}
       summary.totalOT += r.oT || 0;
       summary.totalAdvance += r.advance || 0;
     });

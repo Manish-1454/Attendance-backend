@@ -3,7 +3,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 router.post('/login', async (req, res) => {
-  const { name, phonenumber } = req.body;
+  const { phonenumber,password } = req.body;
 
   try {
     const user = await User.findOne({ phonenumber });

@@ -240,6 +240,61 @@ router.get("/today", async (req, res) => {
 });
 ``;
 
+// Add this route in your attendance routes file (before module.exports)
+// This route returns only UNPAID attendance records for one user
+// and calculates total present days, total advance, and balance salary.
+
+router.get("/salary-status/:userId", auth, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Get all unpaid records for this user
+    const records = await Attendance.find({
+      userId,
+      salaryStatus: "unpaid",
+    });
+
+    let summary = {
+      presentDays: 0,
+      totalAdvance: 0,
+      salaryPerDay: 0,
+      grossSalary: 0,
+      balanceSalary: 0,
+      records,
+    };
+
+    records.forEach((record) => {
+      // Count only Present days
+      if (record.status === "Present") {
+        summary.presentDays += 1;
+      }
+
+      // Sum all advance amounts
+      summary.totalAdvance += Number(record.advance || 0);
+
+      // Get salary per day from any record
+      // (all records for the same worker should have the same salary)
+      if (!summary.salaryPerDay && record.salaryPerDay) {
+        summary.salaryPerDay = Number(record.salaryPerDay);
+      }
+    });
+
+    // Calculate gross salary
+    summary.grossSalary =
+      summary.presentDays * summary.salaryPerDay;
+
+    // Final balance salary
+    summary.balanceSalary =
+      summary.grossSalary - summary.totalAdvance;
+
+    res.json(summary);
+  } catch (err) {
+    console.error("Salary status error:", err);
+    res.status(500).json({
+      error: "Failed to fetch salary status",
+    });
+  }
+});
 router.get("/week-summary", async (req, res) => {
   try {
     const startOfWeek = moment().startOf("isoWeek");

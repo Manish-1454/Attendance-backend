@@ -3,10 +3,10 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 router.post('/login', async (req, res) => {
-  const { name, password } = req.body;
+  const { name, phonenumber } = req.body;
 
   try {
-    const user = await User.findOne({ name });
+    const user = await User.findOne({ phonenumber });
     if (!user) return res.status(400).send('User not found');
 
     if (user.password !== password) {

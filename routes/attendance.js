@@ -248,6 +248,7 @@ router.get("/salary-status/:userId", auth, async (req, res) => {
   try {
     const userId = req.params.userId;
 
+    // Get all unpaid records for this user
     const records = await Attendance.find({
       userId,
       salaryStatus: "unpaid",
@@ -258,36 +259,33 @@ router.get("/salary-status/:userId", auth, async (req, res) => {
       totalAdvance: 0,
       salaryPerDay: 0,
       grossSalary: 0,
-      totalot: 0,
       balanceSalary: 0,
       records,
     };
 
-    // Get salary per day from first attendance record
-    if (records.length > 0) {
-      summary.salaryPerDay = Number(records[0].salaryPerDay || 0);
-    }
-
     records.forEach((record) => {
-      // Count present days only
+      // Count only Present days
       if (record.status === "Present") {
         summary.presentDays += 1;
       }
 
-      // Add advance
+      // Sum all advance amounts
       summary.totalAdvance += Number(record.advance || 0);
 
-      // Add OT
-      summary.totalot += Number(record.oT || 0);
+      // Get salary per day from any record
+      // (all records for the same worker should have the same salary)
+      if (!summary.salaryPerDay && record.salaryPerDay) {
+        summary.salaryPerDay = Number(record.salaryPerDay);
+      }
     });
 
-    // Calculate Gross Salary
+    // Calculate gross salary
     summary.grossSalary =
       summary.presentDays * summary.salaryPerDay;
 
-    // Calculate Final Balance Salary
+    // Final balance salary
     summary.balanceSalary =
-      summary.grossSalary + summary.totalot - summary.totalAdvance;
+      summary.grossSalary - summary.totalAdvance;
 
     res.json(summary);
   } catch (err) {

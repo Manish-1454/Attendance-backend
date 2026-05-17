@@ -27,7 +27,7 @@ router.post("/mark", auth, role(["manager", "admin"]), async (req, res) => {
     const alreadyMarked = await Attendance.findOne({
       userId,
       date: { $gte: selectedDate, $lte: endOfSelectedDate },
-      status:{ $exists:true},
+      status: { $exists: true },
     });
 
     if (alreadyMarked) {
@@ -48,7 +48,7 @@ router.post("/mark", auth, role(["manager", "admin"]), async (req, res) => {
     });
 
     await newAttendance.save();
-   
+
     res.send("Marked");
   } catch (err) {
     console.error("❌ Attendance Save Error:", err);
@@ -60,13 +60,9 @@ router.put("/edit/paid", async (req, res) => {
   const { salaryStatus } = req.body || {};
   const user = await Attendance.updateMany(
     {
-      $or:[
-        {status:"Present"},
-        {advance:{$gt:0}},
-        {oT:{$gt:0}}
-      ]
+      $or: [{ status: "Present" }, { advance: { $gt: 0 } }, { oT: { $gt: 0 } }],
     },
-    { $set: { salaryStatus: "paid" } }
+    { $set: { salaryStatus: "paid" } },
   );
   res.json("updated sucessfully");
 });
@@ -83,9 +79,9 @@ router.put("/edit/paid/:userId", async (req, res) => {
       {
         userId,
         date: { $gte: start, $lte: end },
-        salaryStatus: "paid" // only change paid → unpaid
+        salaryStatus: "paid", // only change paid → unpaid
       },
-      { $set: { salaryStatus: "unpaid" } }
+      { $set: { salaryStatus: "unpaid" } },
     );
 
     res.json({ message: "Updated to unpaid for selected range" });
@@ -125,7 +121,7 @@ router.put(
           edited: true,
           updatedAt: new Date(),
         },
-        { new: true }
+        { new: true },
       );
 
       if (!attendance) {
@@ -139,27 +135,26 @@ router.put(
       console.error("Edit error:", err);
       res.status(500).json({ error: "Edit failed" });
     }
-  }
+  },
 );
 
 router.post("/advance", async (req, res) => {
-  try{
-  const { userId, advance } = req.body;
-  const user = await User.findById(userId);
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
+  try {
+    const { userId, advance } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-  const attendance = new Attendance({
-    userId,
-    advance,
-    name: user.name,
-    date: new Date(),
-  });
-  await attendance.save();
-  res.json({ message: "OT added successfully", data: attendance });}
-  catch{
-  }
+    const attendance = new Attendance({
+      userId,
+      advance,
+      name: user.name,
+      date: new Date(),
+    });
+    await attendance.save();
+    res.json({ message: "OT added successfully", data: attendance });
+  } catch {}
 });
 // View all attendance - admin & manager
 router.get("/", auth, role(["admin", "manager"]), async (req, res) => {
@@ -174,7 +169,6 @@ router.post("/ot", async (req, res) => {
   try {
     const { userId, oT } = req.body;
 
- 
     // ✅ get user
     const user = await User.findById(userId);
     if (!user) {
@@ -188,7 +182,6 @@ router.post("/ot", async (req, res) => {
       advance: 0,
       name: user.name,
       date: new Date(),
-  
     });
 
     await attendance.save();
@@ -216,7 +209,7 @@ router.get("/today", async (req, res) => {
       malepresent: 0,
       femalepresent: 0,
       absent: 0,
-     
+
       totalOt: 0,
       totaladvance: 0,
     };
@@ -227,7 +220,6 @@ router.get("/today", async (req, res) => {
       if (data.gender === "female" && data.status === "Present")
         summary.femalepresent += 1;
       if (data.status === "Absent") summary.absent += 1;
-   
 
       summary.totalOt += data.oT || 0;
       summary.totaladvance += data.advance || 0;
@@ -280,12 +272,10 @@ router.get("/salary-status/:userId", auth, async (req, res) => {
     });
 
     // Calculate gross salary
-    summary.grossSalary =
-      summary.presentDays * summary.salaryPerDay;
+    summary.grossSalary = summary.presentDays * summary.salaryPerDay;
 
     // Final balance salary
-    summary.balanceSalary =
-      summary.grossSalary - summary.totalAdvance;
+    summary.balanceSalary = summary.grossSalary - summary.totalAdvance;
 
     res.json(summary);
   } catch (err) {
@@ -310,7 +300,7 @@ router.get("/week-summary", async (req, res) => {
     let summary = {
       malepresentDays: 0,
       femalepresentDays: 0,
-   
+
       otHours: 0,
       advance: 0,
     };
@@ -383,9 +373,9 @@ router.get("/week-summary/:userId", async (req, res) => {
     records.forEach((r) => {
       if (r.status === "Present") summary.presentDays += 1;
       if (r.status === "Absent") summary.absentDays += 1;
-     if (r.status && r.status.toLowerCase() === "half day") {
-  summary.halfDays += 1;
-}
+      if (r.status && r.status.toLowerCase() === "half day") {
+        summary.halfDays += 1;
+      }
       summary.totalOT += r.oT || 0;
       summary.totalAdvance += r.advance || 0;
     });

@@ -259,6 +259,7 @@ router.get("/salary-status/:userId", auth, async (req, res) => {
       totalAdvance: 0,
       salaryPerDay: 0,
       grossSalary: 0,
+      totalot:0,
       balanceSalary: 0,
       records,
     };
@@ -271,6 +272,8 @@ router.get("/salary-status/:userId", auth, async (req, res) => {
 
       // Sum all advance amounts
       summary.totalAdvance += Number(record.advance || 0);
+
+      summary.totalot +=Number(record.oT || 0)
 
       // Get salary per day from any record
       // (all records for the same worker should have the same salary)
@@ -285,7 +288,7 @@ router.get("/salary-status/:userId", auth, async (req, res) => {
 
     // Final balance salary
     summary.balanceSalary =
-      summary.grossSalary - summary.totalAdvance;
+      summary.grossSalary + summary.totalot - summary.totalAdvance;
 
     res.json(summary);
   } catch (err) {

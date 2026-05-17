@@ -7,10 +7,12 @@ router.post('/login', async (req, res) => {
 
   try {
     const user = await User.findOne({ phonenumber });
-    if (!user) return res.status(400).send('User not found');
+     if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
 
     if (user.password !== password) {
-      return res.status(400).send('Invalid password');
+      return res.status(400).json({ message: 'Invalid password' });
     }
 
     const token = jwt.sign(
@@ -21,7 +23,8 @@ router.post('/login', async (req, res) => {
     res.json({ token, role: user.role, id: user._id });
 
   } catch (err) {
-    res.status(500).send('Server error');
+   console.error('Login Error:', error);
+    res.status(500).json({ message: 'Server Error' });
   }
 });
 

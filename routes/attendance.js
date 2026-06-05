@@ -344,17 +344,16 @@ router.get("/today/:id", async (req, res) => {
      
       });
 
-    const record2 = await Attendance.findOne({
-      userId,
-      date: { $gte: todayStart, $lte: todayEnd },
-      status
-     
-      });
+  const record2 = await Attendance.findOne({
+  userId,
+  date: { $gte: todayStart, $lte: todayEnd },
+  status: { $exists: true }
+});
 
 
 
       let summary = {
-      version: "MANISH-TEST-123",
+      
       todayStatus: record ? record.status : "Not Marked",
       todayOT: record ? record.oT || 0 : 0,
       todayAdvance: record ? record.advance || 0 : 0,

@@ -351,7 +351,7 @@ router.get("/today/:id", async (req, res) => {
       todayAdvance: record ? record.advance || 0 : 0,
     };
 
-    res.json(summary);
+    res.json(record,summary);
   } catch (err) {
     console.error("Today summary error", err);
     res.status(500).json({ error: "Failed to fetch today summary" });

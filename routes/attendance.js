@@ -344,14 +344,23 @@ router.get("/today/:id", async (req, res) => {
      
       });
 
-    let summary = {
+    const record2 = await Attendance.findOne({
+      userId,
+      date: { $gte: todayStart, $lte: todayEnd },
+      status
+     
+      });
+
+
+
+      let summary = {
       version: "MANISH-TEST-123",
       todayStatus: record ? record.status : "Not Marked",
       todayOT: record ? record.oT || 0 : 0,
       todayAdvance: record ? record.advance || 0 : 0,
     };
 
-    res.json(record,summary);
+    res.json(record2,summary);
   } catch (err) {
     console.error("Today summary error", err);
     res.status(500).json({ error: "Failed to fetch today summary" });

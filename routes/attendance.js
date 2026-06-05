@@ -341,7 +341,8 @@ router.get("/today/:id", async (req, res) => {
     const record = await Attendance.findOne({
       userId,
       date: { $gte: todayStart, $lte: todayEnd },
-    });
+      status
+      });
 
     let summary = {
       todayStatus: record ? record.status : "Not Marked",

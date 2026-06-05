@@ -345,6 +345,7 @@ router.get("/today/:id", async (req, res) => {
       });
 
     let summary = {
+      version: "MANISH-TEST-123",
       todayStatus: record ? record.status : "Not Marked",
       todayOT: record ? record.oT || 0 : 0,
       todayAdvance: record ? record.advance || 0 : 0,

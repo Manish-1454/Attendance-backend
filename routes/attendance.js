@@ -338,11 +338,17 @@ router.get("/today/:id", async (req, res) => {
     const todayStart = moment().startOf("day").toDate();
     const todayEnd = moment().endOf("day").toDate();
 
-    const record = await Attendance.findOne({
+    const record = await Attendance.find({
       userId,
       date: { $gte: todayStart, $lte: todayEnd },
      
       });
+
+   record.forEach((item)=>{
+    totalOT +=item.oT || 0;
+    totalAdvance +=item.advance || 0;
+
+   })
 
   const record2 = await Attendance.findOne({
   userId,
@@ -355,8 +361,8 @@ router.get("/today/:id", async (req, res) => {
       let summary = {
       
       todayStatus: record2 ? record2.status : "Not Marked",
-      todayOT: record ? record.oT || 0 : 0,
-      todayAdvance: record ? record.advance || 0 : 0,
+      todayOT: totalOT,
+      todayAdvance: totalAdvance,
     };
 
     res.json(summary);

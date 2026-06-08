@@ -271,8 +271,8 @@ router.get("/salary-status/:userId", auth, async (req, res) => {
         summary.presentDays += 1;
       }
 
-      summary.totalAdvance += Number(record.advance || 0);
-      summary.totalot += Number(record.oT || 0);
+      summary.totalAdvance += record.advance || 0;
+      summary.totalot += record.oT || 0;
     });
 
     // Gross Salary = Present Days × Salary Per Day
@@ -281,7 +281,7 @@ router.get("/salary-status/:userId", auth, async (req, res) => {
 
     // Final Balance = Gross Salary + OT - Advance
     summary.balanceSalary =
-      summary.grossSalary + summary.totalot - summary.totalAdvance;
+      (summary.grossSalary + summary.totalot) - summary.totalAdvance;
 
     res.json(summary);
   } catch (err) {

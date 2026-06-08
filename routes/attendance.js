@@ -354,7 +354,7 @@ router.get("/today/:id", async (req, res) => {
 
       let summary = {
       
-      todayStatus: record ? record2.status : "Not Marked",
+      todayStatus: record2 ? record2.status : "Not Marked",
       todayOT: record ? record.oT || 0 : 0,
       todayAdvance: record ? record.advance || 0 : 0,
     };

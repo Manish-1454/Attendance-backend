@@ -343,7 +343,8 @@ router.get("/today/:id", async (req, res) => {
       date: { $gte: todayStart, $lte: todayEnd },
      
       });
-
+let totalOT = 0;
+let totalAdvance = 0;
    record.forEach((item)=>{
     totalOT +=item.oT || 0;
     totalAdvance +=item.advance || 0;
